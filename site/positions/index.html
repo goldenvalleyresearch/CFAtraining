@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Open Positions · Golden Valley Research</title>
+  <meta name="description" content="Current open positions in the Golden Valley Research Roth IRA.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy: #0b1526;
+      --navy-2: #12203a;
+      --panel: #101c33;
+      --line: rgba(232, 228, 218, 0.08);
+      --line-strong: rgba(232, 228, 218, 0.14);
+      --gold: #c9a24b;
+      --gold-dim: rgba(201, 162, 75, 0.55);
+      --text: #e8e4da;
+      --muted: #9aa3b5;
+      --faint: #6b7489;
+      --up: #6fcf97;
+      --down: #e58b7b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(ellipse 120% 60% at top, var(--navy-2) 0%, var(--navy) 70%) fixed;
+      background-color: var(--navy);
+      color: var(--text);
+      font-family: "DM Sans", system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+    /* Header */
+    header { border-bottom: 1px solid var(--line); }
+    header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .brand {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-weight: 600; font-size: 14px; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--gold); text-decoration: none;
+    }
+    nav a {
+      color: var(--muted); text-decoration: none; font-size: 13px;
+      letter-spacing: 0.06em; margin-left: 24px;
+    }
+    nav a.active { color: var(--text); border-bottom: 1px solid var(--gold); padding-bottom: 4px; }
+
+    /* Title */
+    .title { padding: 56px 0 32px; }
+    .eyebrow { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    h1 {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-weight: 500; font-size: clamp(38px, 6vw, 56px); line-height: 1.05;
+    }
+    .asof { color: var(--muted); font-size: 13px; margin-top: 12px; }
+
+    /* Summary */
+    .summary {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong);
+      margin-bottom: 48px;
+    }
+    .stat { padding: 24px 20px 24px 0; }
+    .stat + .stat { padding-left: 20px; border-left: 1px solid var(--line); }
+    .stat .label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .stat .value {
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 34px; font-weight: 500; line-height: 1.2; margin-top: 6px;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    .stat .sub { font-size: 13px; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+    /* Table */
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+    h2 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 26px; }
+    .hint { font-size: 12px; color: var(--faint); }
+    .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; background: rgba(16, 28, 51, 0.5); }
+    table { width: 100%; border-collapse: collapse; min-width: 860px; font-variant-numeric: tabular-nums; }
+    th {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); text-align: right; padding: 14px 16px;
+      border-bottom: 1px solid var(--line-strong); cursor: pointer; user-select: none; white-space: nowrap;
+    }
+    th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--panel); }
+    th:hover { color: var(--text); }
+    th.sorted { color: var(--gold); }
+    th .arrow { display: inline-block; width: 10px; }
+    td { padding: 14px 16px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(201, 162, 75, 0.04); }
+    tbody tr:hover td:first-child { background: #15233f; }
+    .sym { font-weight: 600; letter-spacing: 0.02em; }
+    .desc { font-size: 12px; color: var(--muted); max-width: 240px; overflow: hidden; text-overflow: ellipsis; text-transform: capitalize; }
+    .badge {
+      display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
+      color: var(--gold); border: 1px solid var(--gold-dim); border-radius: 2px;
+      padding: 1px 5px; margin-left: 6px; vertical-align: 2px;
+    }
+    .weight { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+    .bar { width: 64px; height: 4px; background: var(--line-strong); border-radius: 2px; overflow: hidden; }
+    .bar span { display: block; height: 100%; background: var(--gold); }
+    .sub-num { display: block; font-size: 12px; }
+    tfoot td { border-top: 1px solid var(--line-strong); border-bottom: none; color: var(--muted); }
+    tfoot td:first-child { color: var(--text); }
+    .up { color: var(--up); }
+    .down { color: var(--down); }
+    .flat { color: var(--muted); }
+
+    .error { border: 1px solid var(--down); color: var(--down); padding: 16px; border-radius: 4px; }
+
+    footer { margin-top: 64px; padding: 28px 0 40px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12px; line-height: 1.7; }
+    footer .src { margin-top: 4px; }
+
+    @media (max-width: 760px) {
+      .summary { grid-template-columns: 1fr 1fr; }
+      .stat:nth-child(3) { padding-left: 0; border-left: none; }
+      .stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .stat .value { font-size: 28px; }
+      nav a { margin-left: 16px; }
+      .title { padding: 40px 0 24px; }
+      .desc { max-width: 110px; }
+      th, td { padding: 12px 12px; }
+      .hint::before { content: "Swipe for more · "; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <a class="brand" href="/">Golden Valley Research</a>
+      <nav><a class="active" href="/positions/">Positions</a></nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="title">
+      <div class="eyebrow" id="account">Roth IRA</div>
+      <h1>Open Positions</h1>
+      <div class="asof" id="asof">Loading…</div>
+    </section>
+
+    <section class="summary" id="summary"></section>
+
+    <section>
+      <div class="section-head">
+        <h2>Holdings</h2>
+        <span class="hint">Click a column to sort</span>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr id="thead"></tr></thead>
+          <tbody id="tbody"></tbody>
+          <tfoot id="tfoot"></tfoot>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <div>For informational purposes only. Not investment advice. Positions reflect a personal account and may change at any time.</div>
+      <div class="src" id="src"></div>
+    </footer>
+  </main>
+
+  <script>
+    const usd = (n, sign) => {
+      if (n == null) return "—";
+      const s = Math.abs(n).toLocaleString("en-US", { style: "currency", currency: "USD" });
+      if (sign) return (n > 0 ? "+" : n < 0 ? "−" : "") + s;
+      return n < 0 ? "−" + s : s;
+    };
+    const pct = (n, sign, isFraction) => {
+      if (n == null) return "—";
+      const v = isFraction ? n * 100 : n;
+      const s = Math.abs(v).toFixed(2) + "%";
+      return sign ? (v > 0 ? "+" : v < 0 ? "−" : "") + s : s;
+    };
+    const tone = (n) => (n > 0 ? "up" : n < 0 ? "down" : "flat");
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    const fmtExp = (iso) => new Date(iso + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+
+    const COLUMNS = [
+      { key: "symbol", label: "Position", sort: (h) => h.symbol },
+      { key: "quantity", label: "Qty", sort: (h) => h.quantity },
+      { key: "lastPrice", label: "Price", sort: (h) => h.lastPrice },
+      { key: "todayGainPct", label: "Today", sort: (h) => h.todayGainPct },
+      { key: "marketValue", label: "Value", sort: (h) => h.marketValue },
+      { key: "weight", label: "Weight", sort: (h) => h.weight },
+      { key: "costBasis", label: "Cost Basis", sort: (h) => h.costBasis },
+      { key: "totalGainPct", label: "Total Return", sort: (h) => h.totalGainPct },
+    ];
+
+    let data, sortKey = "marketValue", sortDir = -1;
+
+    function renderSummary(s) {
+      const tiles = [
+        ["Account Value", usd(s.accountValue), `${s.positionCount} positions + cash`, "flat"],
+        ["Today", usd(s.todayGain, true), pct(s.todayGainPct, true, true), tone(s.todayGain)],
+        ["Unrealized Gain", usd(s.unrealizedGain, true), pct(s.unrealizedGainPct, true, true) + " on cost", tone(s.unrealizedGain)],
+        ["Cash", usd(s.cash), pct(s.cashWeight, false, true) + " of account", "flat"],
+      ];
+      document.getElementById("summary").innerHTML = tiles.map(([l, v, sub, t]) => `
+        <div class="stat">
+          <div class="label">${l}</div>
+          <div class="value ${l === "Today" || l === "Unrealized Gain" ? t : ""}">${v}</div>
+          <div class="sub ${t}">${sub}</div>
+        </div>`).join("");
+    }
+
+    function renderHead() {
+      document.getElementById("thead").innerHTML = COLUMNS.map((c) => {
+        const on = c.key === sortKey;
+        return `<th data-key="${c.key}" class="${on ? "sorted" : ""}">${c.label}<span class="arrow">${on ? (sortDir < 0 ? " ↓" : " ↑") : ""}</span></th>`;
+      }).join("");
+      document.querySelectorAll("th").forEach((th) => th.addEventListener("click", () => {
+        const k = th.dataset.key;
+        if (k === sortKey) sortDir *= -1; else { sortKey = k; sortDir = k === "symbol" ? 1 : -1; }
+        renderHead(); renderBody();
+      }));
+    }
+
+    function renderBody() {
+      const col = COLUMNS.find((c) => c.key === sortKey);
+      const rows = [...data.holdings].sort((a, b) => {
+        const x = col.sort(a), y = col.sort(b);
+        if (x == null) return 1; if (y == null) return -1;
+        return (x > y ? 1 : x < y ? -1 : 0) * sortDir;
+      });
+      const maxW = Math.max(...data.holdings.map((h) => h.weight), data.summary.cashWeight);
+
+      document.getElementById("tbody").innerHTML = rows.map((h) => {
+        const o = h.option;
+        const desc = o ? `$${o.strike} ${o.type.toLowerCase()} · exp ${fmtExp(o.expiration)}` : h.description.toLowerCase();
+        return `<tr>
+          <td><span class="sym">${esc(h.symbol)}</span>${o ? `<span class="badge">${o.type}</span>` : ""}<div class="desc">${esc(desc)}</div></td>
+          <td>${h.quantity ?? "—"}${o ? `<span class="sub-num flat">contract${h.quantity === 1 ? "" : "s"}</span>` : ""}</td>
+          <td>${usd(h.lastPrice)}</td>
+          <td class="${tone(h.todayGain)}">${pct(h.todayGainPct, true)}<span class="sub-num">${usd(h.todayGain, true)}</span></td>
+          <td>${usd(h.marketValue)}</td>
+          <td><div class="weight">${pct(h.weight, false, true)}<div class="bar"><span style="width:${(h.weight / maxW) * 100}%"></span></div></div></td>
+          <td>${usd(h.costBasis)}<span class="sub-num flat">${usd(h.avgCost)} avg</span></td>
+          <td class="${tone(h.totalGain)}">${pct(h.totalGainPct, true)}<span class="sub-num">${usd(h.totalGain, true)}</span></td>
+        </tr>`;
+      }).join("");
+
+      const s = data.summary;
+      document.getElementById("tfoot").innerHTML = `
+        <tr>
+          <td><span class="sym">Cash</span><div class="desc">money market</div></td>
+          <td></td><td></td><td></td>
+          <td>${usd(s.cash)}</td>
+          <td><div class="weight">${pct(s.cashWeight, false, true)}<div class="bar"><span style="width:${(s.cashWeight / maxW) * 100}%"></span></div></div></td>
+          <td></td><td></td>
+        </tr>
+        <tr>
+          <td><span class="sym">Total</span></td>
+          <td></td><td></td>
+          <td class="${tone(s.todayGain)}">${pct(s.todayGainPct, true, true)}<span class="sub-num">${usd(s.todayGain, true)}</span></td>
+          <td style="color:var(--text)">${usd(s.accountValue)}</td>
+          <td>100.00%</td>
+          <td>${usd(s.costBasis)}</td>
+          <td class="${tone(s.unrealizedGain)}">${pct(s.unrealizedGainPct, true, true)}<span class="sub-num">${usd(s.unrealizedGain, true)}</span></td>
+        </tr>`;
+    }
+
+    fetch("/data/positions.json", { cache: "no-store" })
+      .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then((d) => {
+        data = d;
+        document.getElementById("account").textContent = d.accountName ? d.accountName.replace(/roth ira/i, "Roth IRA") : "Roth IRA";
+        document.getElementById("asof").textContent = "As of " + d.asOf.label;
+        document.getElementById("src").textContent = "Source: Fidelity positions export";
+        renderSummary(d.summary);
+        renderHead();
+        renderBody();
+      })
+      .catch((e) => {
+        document.getElementById("asof").textContent = "";
+        document.getElementById("summary").outerHTML = `<div class="error">Positions data couldn't load (${esc(e.message)}).</div>`;
+      });
+  </script>
+</body>
+</html>

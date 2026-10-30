@@ -1,0 +1,9 @@
+[build]
+  command = "node scripts/build.js"
+  publish = "site"
+
+# Never cache the data file, so a new upload shows up right away.
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "no-cache"
