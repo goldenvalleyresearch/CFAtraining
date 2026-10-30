@@ -26,7 +26,7 @@ A line in `balances.csv` also overrides the positions file for the same day.
 
 - `/performance/` — cumulative return vs. benchmarks (VOO, QQQ)
 - `/positions/` — open positions from the newest positions file
-- `/` — homepage (currently "Under Renovation")
+- `/` — homepage (live return vs. VOO, snapshot, sections; Strategy, CFA Notebook, and About are placeholders for now)
 
 ## How performance is calculated
 

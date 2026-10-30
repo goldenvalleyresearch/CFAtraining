@@ -4,80 +4,337 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Golden Valley Research</title>
-  <meta name="description" content="Golden Valley Research is being rebuilt. Back soon.">
+  <meta name="description" content="A live portfolio and research notebook, applying the CFA curriculum to real capital.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
   <style>
     :root {
       --navy: #0b1526;
       --navy-2: #12203a;
+      --panel: #0f1b31;
+      --line: rgba(232, 228, 218, 0.08);
+      --line-strong: rgba(232, 228, 218, 0.14);
       --gold: #c9a24b;
-      --gold-soft: rgba(201, 162, 75, 0.35);
+      --gold-dim: rgba(201, 162, 75, 0.55);
       --text: #e8e4da;
       --muted: #9aa3b5;
+      --faint: #6b7489;
+      --up: #6fcf97;
+      --down: #e58b7b;
+      --s0: #b8892f;
+      --s1: #3e8ee8;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
     body {
-      background: radial-gradient(ellipse at top, var(--navy-2) 0%, var(--navy) 70%);
+      background: radial-gradient(ellipse 120% 60% at top, var(--navy-2) 0%, var(--navy) 70%) fixed;
       background-color: var(--navy);
       color: var(--text);
       font-family: "DM Sans", system-ui, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 32px 16px;
-      text-align: center;
+      font-size: 15px; line-height: 1.5; min-height: 100vh;
     }
-    .mark {
-      font-family: "Cormorant Garamond", Georgia, serif;
-      font-weight: 600;
-      font-size: 15px;
-      letter-spacing: 0.32em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 40px;
+    a { color: inherit; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+    header { border-bottom: 1px solid var(--line); }
+    header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .brand {
+      font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-size: 14px;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); text-decoration: none;
     }
-    .rule {
-      width: 64px;
-      height: 1px;
-      background: var(--gold);
-      margin: 0 auto 32px;
+    nav { display: flex; white-space: nowrap; }
+    nav a { color: var(--muted); text-decoration: none; font-size: 13px; letter-spacing: 0.06em; margin-left: 24px; }
+    nav a:hover { color: var(--text); }
+
+    .eyebrow { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+
+    /* Hero */
+    .hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 56px; align-items: center; padding: 88px 0 72px; }
+    .hero h1 {
+      font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500;
+      font-size: clamp(46px, 7vw, 80px); line-height: 0.98; margin: 18px 0 22px;
     }
-    h1 {
-      font-family: "Cormorant Garamond", Georgia, serif;
-      font-weight: 500;
-      font-size: clamp(40px, 8vw, 72px);
-      line-height: 1.05;
-      margin-bottom: 20px;
+    .hero h1 em { font-style: italic; color: var(--gold); }
+    .tagline { font-size: 18px; line-height: 1.6; color: var(--muted); max-width: 470px; }
+    .rule { width: 64px; height: 1px; background: var(--gold); margin: 32px 0; }
+    .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 22px;
+      font: 500 14px "DM Sans", sans-serif; text-decoration: none; transition: background .15s, border-color .15s, color .15s;
     }
-    p {
-      font-size: 17px;
-      line-height: 1.6;
-      color: var(--muted);
-      max-width: 420px;
-      margin: 0 auto;
+    .btn-primary { background: var(--gold); color: var(--navy); }
+    .btn-primary:hover { background: #d7b15c; }
+    .btn-ghost { border: 1px solid var(--line-strong); color: var(--text); }
+    .btn-ghost:hover { border-color: var(--gold-dim); }
+
+    /* Live card */
+    .live {
+      border: 1px solid var(--line-strong); border-radius: 6px; padding: 28px 28px 22px;
+      background: linear-gradient(180deg, rgba(18, 32, 58, 0.85), rgba(15, 27, 49, 0.6));
+      box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.6);
     }
-    footer {
-      position: fixed;
-      bottom: 24px;
-      left: 0;
-      right: 0;
-      font-size: 12px;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      opacity: 0.7;
+    .live-top { display: flex; justify-content: space-between; align-items: center; }
+    .pulse { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+    .pulse::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--up); box-shadow: 0 0 0 0 rgba(111, 207, 151, 0.6); animation: pulse 2.4s infinite; }
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(111, 207, 151, 0.5); } 70% { box-shadow: 0 0 0 8px rgba(111, 207, 151, 0); } 100% { box-shadow: 0 0 0 0 rgba(111, 207, 151, 0); } }
+    @media (prefers-reduced-motion: reduce) { .pulse::before { animation: none; } }
+    .live-label { margin-top: 22px; font-size: 13px; color: var(--muted); }
+    .live-value {
+      font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 64px; line-height: 1.05;
+      font-variant-numeric: lining-nums tabular-nums;
     }
-    footer span { color: var(--gold); }
+    .live-compare { font-size: 14px; color: var(--muted); margin-top: 4px; font-variant-numeric: tabular-nums; }
+    .spark { margin-top: 20px; height: 120px; }
+    .spark svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .legend { display: flex; gap: 18px; font-size: 12px; color: var(--muted); margin-top: 10px; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .legend i { width: 14px; height: 2px; border-radius: 1px; display: inline-block; }
+    .live-foot { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; font-size: 12px; color: var(--faint); }
+    .live-foot a { color: var(--gold); text-decoration: none; }
+    .live-foot a:hover { text-decoration: underline; }
+
+    /* Snapshot strip */
+    .strip { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong); }
+    .fact { display: block; padding: 24px 20px; text-decoration: none; transition: background .15s; }
+    .fact + .fact { border-left: 1px solid var(--line); }
+    .fact:hover { background: rgba(201, 162, 75, 0.04); }
+    .fact .label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+    .fact .label::after { content: "→"; color: var(--faint); transition: transform .15s, color .15s; }
+    .fact:hover .label::after { color: var(--gold); transform: translateX(3px); }
+    .fact .value { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 34px; line-height: 1.2; margin-top: 6px; font-variant-numeric: lining-nums tabular-nums; }
+    .fact .sub { font-size: 13px; color: var(--muted); }
+
+    /* Sections */
+    section.block { padding: 96px 0 0; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 32px; }
+    h2 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: clamp(32px, 4vw, 42px); line-height: 1.1; margin-top: 10px; }
+
+    /* Pillars */
+    .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .pillar {
+      position: relative; display: flex; flex-direction: column; min-height: 260px; padding: 28px;
+      border: 1px solid var(--line); border-radius: 6px; background: rgba(15, 27, 49, 0.5); text-decoration: none;
+      transition: border-color .2s, transform .2s, background .2s;
+    }
+    a.pillar:hover { border-color: var(--gold-dim); transform: translateY(-2px); background: rgba(18, 32, 58, 0.7); }
+    .pillar .num { font-family: "Cormorant Garamond", Georgia, serif; font-size: 15px; color: var(--gold); letter-spacing: 0.1em; }
+    .pillar h3 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 30px; margin: 18px 0 10px; }
+    .pillar p { color: var(--muted); font-size: 15px; line-height: 1.6; }
+    .pillar .foot { margin-top: auto; padding-top: 24px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 12px; border: 1px solid var(--line-strong); color: var(--muted);
+    }
+    .badge.live-b { border-color: rgba(111, 207, 151, 0.35); color: var(--up); }
+    .pillar .go { color: var(--gold); transition: transform .2s; }
+    a.pillar:hover .go { transform: translateX(4px); }
+    .pillar.soon { border-style: dashed; }
+
+    /* About */
+    .about { display: grid; grid-template-columns: 1fr 1.6fr; gap: 56px; padding: 40px; border: 1px dashed var(--line-strong); border-radius: 6px; }
+    .about p { color: var(--muted); font-size: 16px; line-height: 1.7; }
+
+    footer { margin-top: 112px; padding: 28px 0 40px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12px; line-height: 1.7; display: flex; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+    footer .brand { font-size: 12px; }
+
+    .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--muted); }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; gap: 40px; padding: 56px 0 56px; }
+      .pillars { grid-template-columns: 1fr; }
+      .pillar { min-height: 0; }
+      .about { grid-template-columns: 1fr; gap: 16px; padding: 28px; }
+    }
+    @media (max-width: 760px) {
+      .strip { grid-template-columns: 1fr 1fr; }
+      .fact:nth-child(3) { border-left: none; }
+      .fact:nth-child(n+3) { border-top: 1px solid var(--line); }
+      .fact { padding: 20px 14px; }
+      .fact .value { font-size: 28px; }
+      .live { padding: 22px 20px 18px; }
+      .live-value { font-size: 52px; }
+      section.block { padding-top: 72px; }
+      nav a { margin-left: 14px; }
+      .brand { font-size: 12px; letter-spacing: 0.22em; }
+    }
   </style>
 </head>
 <body>
-  <div class="mark">Golden Valley Research</div>
-  <div class="rule"></div>
-  <h1>Under Renovation</h1>
-  <p>The site is being rebuilt from the ground up. Back soon.</p>
-  <footer>&copy; 2026 <span>Golden Valley Research</span></footer>
+  <header>
+    <div class="wrap">
+      <a class="brand" href="/">Golden Valley Research</a>
+      <nav>
+        <a href="/performance/">Performance</a>
+        <a href="/positions/">Positions</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- Hero -->
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Roth IRA · Research Notebook</div>
+        <h1>Golden Valley <em>Research</em></h1>
+        <p class="tagline">A live portfolio and research notebook, applying the CFA curriculum to real capital.</p>
+        <div class="rule"></div>
+        <div class="ctas">
+          <a class="btn btn-primary" href="/performance/">View performance →</a>
+          <a class="btn btn-ghost" href="/positions/">Open positions</a>
+        </div>
+      </div>
+
+      <div class="live" id="live">
+        <div class="live-top">
+          <span class="pulse">Live portfolio</span>
+          <span class="eyebrow" style="font-size:11px">Simple return</span>
+        </div>
+        <div class="live-label" id="live-label">Return since inception</div>
+        <div class="live-value" id="live-value">—</div>
+        <div class="live-compare" id="live-compare">&nbsp;</div>
+        <div class="spark" id="spark" role="img" aria-label="Roth IRA return compared with VOO since inception"></div>
+        <div class="legend">
+          <span><i style="background:var(--s0)"></i>Roth IRA</span>
+          <span><i style="background:var(--s1)"></i>VOO · S&amp;P 500</span>
+        </div>
+        <div class="live-foot"><span id="live-asof">Loading…</span><a href="/performance/">Full chart →</a></div>
+      </div>
+    </section>
+
+    <!-- Snapshot strip -->
+    <section class="strip" id="strip">
+      <a class="fact" href="/performance/"><div class="label">Account return</div><div class="value" id="f-return">—</div><div class="sub" id="f-return-sub">&nbsp;</div></a>
+      <a class="fact" href="/positions/"><div class="label">Positions held</div><div class="value" id="f-count">—</div><div class="sub" id="f-count-sub">&nbsp;</div></a>
+      <a class="fact" href="/positions/"><div class="label">Largest position</div><div class="value" id="f-top">—</div><div class="sub" id="f-top-sub">&nbsp;</div></a>
+      <a class="fact" href="/positions/"><div class="label">Cash</div><div class="value" id="f-cash">—</div><div class="sub" id="f-cash-sub">&nbsp;</div></a>
+    </section>
+
+    <!-- Pillars -->
+    <section class="block">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">What's here</div>
+          <h2>Three parts of one process</h2>
+        </div>
+      </div>
+      <div class="pillars">
+        <a class="pillar" href="/performance/">
+          <span class="num">01</span>
+          <h3>Performance</h3>
+          <p>Every trade, every day, measured against the market.</p>
+          <div class="foot"><span class="badge live-b">Live</span><span class="go">→</span></div>
+        </a>
+        <div class="pillar soon">
+          <span class="num">02</span>
+          <h3>Strategy</h3>
+          <p>How positions are chosen, sized, and sold, and how options fit in.</p>
+          <div class="foot"><span class="badge">Under construction</span></div>
+        </div>
+        <div class="pillar soon">
+          <span class="num">03</span>
+          <h3>CFA Notebook</h3>
+          <p>Short posts applying topics from the CFA curriculum to this portfolio.</p>
+          <div class="foot"><span class="badge">Coming soon</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="block">
+      <div class="about">
+        <div>
+          <div class="eyebrow">About</div>
+          <h2>The person behind the portfolio</h2>
+        </div>
+        <div>
+          <p>This section is under construction.</p>
+          <div style="margin-top:16px"><span class="badge">Under construction</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="wrap">
+    <footer>
+      <div>
+        <div class="brand">Golden Valley Research</div>
+        <div style="margin-top:6px">For informational purposes only. Not investment advice. Past performance does not guarantee future results.</div>
+      </div>
+      <div id="foot-asof"></div>
+    </footer>
+  </div>
+
+  <script>
+    const pct = (n) => {
+      if (n == null || !isFinite(n)) return "—";
+      const v = n * 100;
+      return (v > 0.004 ? "+" : v < -0.004 ? "−" : "") + Math.abs(v).toFixed(2) + "%";
+    };
+    const tone = (n) => (n > 0.00004 ? "up" : n < -0.00004 ? "down" : "flat");
+    const usd = (n) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
+    const fmtDate = (iso, o = { month: "short", day: "numeric", year: "numeric" }) => new Date(iso + "T12:00:00").toLocaleDateString("en-US", o);
+    const set = (id, html, cls) => { const el = document.getElementById(id); el.innerHTML = html; if (cls) el.className += " " + cls; };
+    const lastOf = (s, k) => { for (let i = s.length - 1; i >= 0; i--) if (s[i][k] != null) return s[i][k]; return null; };
+
+    function sparkline(roth, voo) {
+      const W = 400, H = 120, PAD = 6;
+      const series = [[0, ...roth], voo ? [0, ...voo] : null].filter(Boolean);
+      const all = series.flat().filter((v) => v != null);
+      let min = Math.min(0, ...all), max = Math.max(0, ...all);
+      const span = max - min || 0.01; min -= span * 0.12; max += span * 0.12;
+      const n = series[0].length;
+      const x = (i) => PAD + (i / (n - 1)) * (W - PAD * 2);
+      const y = (v) => H - ((v - min) / (max - min)) * H;
+      const path = (s) => s.map((v, i) => (v == null ? null : `${x(i).toFixed(1)},${y(v).toFixed(1)}`)).filter(Boolean).map((p, i) => (i ? "L" : "M") + p).join(" ");
+      const rothPath = path(series[0]);
+      const lastX = x(n - 1), lastY = y(series[0][n - 1]);
+      const area = `${rothPath} L${lastX.toFixed(1)},${y(0).toFixed(1)} L${x(0).toFixed(1)},${y(0).toFixed(1)} Z`;
+      return `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+        <defs><linearGradient id="g" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#b8892f" stop-opacity="0.25"/><stop offset="1" stop-color="#b8892f" stop-opacity="0"/></linearGradient></defs>
+        <line x1="0" x2="${W}" y1="${y(0)}" y2="${y(0)}" stroke="rgba(232,228,218,0.2)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+        <path d="${area}" fill="url(#g)" stroke="none"/>
+        ${voo ? `<path d="${path(series[1])}" fill="none" stroke="#3e8ee8" stroke-width="1.75" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>` : ""}
+        <path d="${rothPath}" fill="none" stroke="#b8892f" stroke-width="2.5" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+      </svg>
+      <div style="position:relative;top:-${H}px;height:0"><span style="position:absolute;left:calc(${(lastX / W) * 100}% - 5px);top:${lastY - 5}px;width:10px;height:10px;border-radius:50%;background:#b8892f;border:2px solid #0f1b31"></span></div>`;
+    }
+
+    Promise.all([
+      fetch("/data/performance.json", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+      fetch("/data/positions.json", { cache: "no-store" }).then((r) => (r.ok ? r.json() : null)).catch(() => null),
+    ]).then(([perf, pos]) => {
+      if (perf && perf.roth && perf.roth.series.length) {
+        const roth = perf.roth.series;
+        const voo = (perf.benchmarks || []).find((b) => b.symbol === "VOO" && b.available);
+        const r = perf.roth.simple, v = voo ? lastOf(voo.series, "simple") : null;
+
+        set("live-value", pct(r), tone(r));
+        set("live-compare", v == null ? "&nbsp;" :
+          `VOO ${pct(v)} with the same contributions · <span class="${tone(r - v)}">Roth ${r >= v ? "ahead" : "behind"} by ${Math.abs((r - v) * 100).toFixed(2)} pts</span>`);
+        document.getElementById("spark").innerHTML = sparkline(roth.map((p) => p.simple), voo ? voo.series.map((p) => p.simple) : null);
+        set("live-asof", `As of ${fmtDate(perf.asOf)} close · since ${fmtDate(perf.startDate, { month: "short", day: "numeric" })}`);
+        set("foot-asof", `Data as of ${fmtDate(perf.asOf)}`);
+
+        const last = roth[roth.length - 1];
+        set("f-return", pct(r), tone(r));
+        set("f-return-sub", `${usd(last.value - last.invested).replace("-", "−")} on ${usd(last.invested)} invested`);
+      } else {
+        set("live-asof", "Performance data unavailable");
+      }
+
+      if (pos && pos.holdings) {
+        const s = pos.summary, top = pos.holdings[0];
+        const stocks = pos.holdings.filter((h) => !h.option).length, opts = pos.holdings.length - stocks;
+        set("f-count", String(s.positionCount));
+        set("f-count-sub", `${stocks} stock${stocks === 1 ? "" : "s"}${opts ? ` · ${opts} option${opts === 1 ? "" : "s"}` : ""}`);
+        if (top) {
+          set("f-top", top.symbol + (top.option ? ` <span style="font-size:16px;color:var(--gold)">${top.option.type}</span>` : ""));
+          set("f-top-sub", `${(top.weight * 100).toFixed(1)}% of account`);
+        }
+        set("f-cash", (s.cashWeight * 100).toFixed(1) + "%");
+        set("f-cash-sub", usd(s.cash));
+      }
+    });
+  </script>
 </body>
 </html>
