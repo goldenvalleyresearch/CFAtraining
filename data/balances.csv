@@ -1,0 +1,9 @@
+# Daily end-of-day account balance from Fidelity. One line per trading day.
+# Only needed for days with no positions file. A line here overrides the positions file for that day.
+date,balance
+10/21/2026,850.14
+10/22/2026,1419.71
+10/23/2026,1440.66
+10/26/2026,1466.65
+10/27/2026,1559.97
+10/28/2026,1585.51

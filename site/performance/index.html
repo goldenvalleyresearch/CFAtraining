@@ -1,0 +1,408 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Performance · Golden Valley Research</title>
+  <meta name="description" content="Golden Valley Research Roth IRA performance compared with VOO and QQQ.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --navy: #0b1526;
+      --navy-2: #12203a;
+      --panel: #0f1b31;
+      --line: rgba(232, 228, 218, 0.08);
+      --line-strong: rgba(232, 228, 218, 0.14);
+      --gold: #c9a24b;
+      --gold-dim: rgba(201, 162, 75, 0.55);
+      --text: #e8e4da;
+      --muted: #9aa3b5;
+      --faint: #6b7489;
+      --up: #6fcf97;
+      --down: #e58b7b;
+      /* Series colors, fixed order (validated for the navy surface) */
+      --s0: #b8892f;
+      --s1: #3e8ee8;
+      --s2: #d9677a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(ellipse 120% 60% at top, var(--navy-2) 0%, var(--navy) 70%) fixed;
+      background-color: var(--navy);
+      color: var(--text);
+      font-family: "DM Sans", system-ui, sans-serif;
+      font-size: 15px; line-height: 1.5; min-height: 100vh;
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 0 16px; }
+
+    header { border-bottom: 1px solid var(--line); }
+    header .wrap { display: flex; align-items: center; justify-content: space-between; height: 68px; }
+    .brand {
+      font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; font-size: 14px;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); text-decoration: none;
+    }
+    nav { display: flex; white-space: nowrap; }
+    nav a { color: var(--muted); text-decoration: none; font-size: 13px; letter-spacing: 0.06em; margin-left: 24px; }
+    nav a:hover { color: var(--text); }
+    nav a.active { color: var(--text); border-bottom: 1px solid var(--gold); padding-bottom: 4px; }
+
+    .title { padding: 56px 0 32px; }
+    .eyebrow { font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin-bottom: 12px; }
+    h1 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: clamp(38px, 6vw, 56px); line-height: 1.05; }
+    .asof { color: var(--muted); font-size: 13px; margin-top: 12px; }
+
+    /* Headline numbers */
+    .summary {
+      display: grid; grid-template-columns: 1.3fr repeat(var(--bench-count, 2), 1fr);
+      border-top: 1px solid var(--line-strong); border-bottom: 1px solid var(--line-strong);
+      margin-bottom: 40px;
+    }
+    .stat { padding: 24px 20px 24px 0; }
+    .stat + .stat { padding-left: 20px; border-left: 1px solid var(--line); }
+    .stat .label { display: flex; align-items: center; gap: 8px; font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+    .swatch { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+    .stat .value {
+      font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; line-height: 1.15; margin-top: 6px;
+      font-size: 34px; font-variant-numeric: lining-nums tabular-nums;
+    }
+    .stat.hero .value { font-size: 48px; }
+    .stat .sub { font-size: 13px; margin-top: 4px; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+    /* Return method switch */
+    .method { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 20px; }
+    .seg { display: inline-flex; border: 1px solid var(--line-strong); border-radius: 18px; padding: 3px; }
+    .seg button {
+      height: 30px; padding: 0 14px; border: 0; border-radius: 15px; background: transparent;
+      color: var(--muted); font: 500 13px "DM Sans", sans-serif; cursor: pointer; transition: background .15s, color .15s;
+    }
+    .seg button:hover { color: var(--text); }
+    .seg button[aria-pressed="true"] { background: var(--gold); color: var(--navy); }
+    .method-note { font-size: 13px; color: var(--muted); max-width: 560px; }
+
+    /* Chart card */
+    .card { border: 1px solid var(--line); border-radius: 4px; background: rgba(15, 27, 49, 0.6); padding: 20px 20px 12px; }
+    .card-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+    h2 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: 26px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px;
+      border: 1px solid var(--line-strong); border-radius: 16px; background: transparent;
+      color: var(--muted); font: 500 13px "DM Sans", sans-serif; cursor: pointer;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    .chip:hover { color: var(--text); border-color: var(--gold-dim); }
+    .chip[aria-pressed="true"] { color: var(--text); background: rgba(232, 228, 218, 0.05); }
+    .chip[aria-pressed="false"] .swatch { opacity: 0.25; }
+    .chip.locked { cursor: default; }
+    .chip.locked:hover { border-color: var(--line-strong); }
+    .chip .lock { font-size: 11px; color: var(--faint); }
+    .chart-box { position: relative; height: 380px; }
+    .chart-foot { display: flex; justify-content: space-between; font-size: 12px; color: var(--faint); padding-top: 8px; }
+
+    /* Table */
+    .section { margin-top: 48px; }
+    .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+    .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; background: rgba(15, 27, 49, 0.5); }
+    table { width: 100%; border-collapse: collapse; min-width: 560px; font-variant-numeric: tabular-nums; }
+    th {
+      font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+      text-align: right; padding: 14px 16px; border-bottom: 1px solid var(--line-strong); white-space: nowrap;
+    }
+    th .swatch { display: inline-block; margin-right: 6px; vertical-align: -1px; }
+    th:first-child, td:first-child { text-align: left; }
+    td { padding: 12px 16px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(201, 162, 75, 0.04); }
+    .note { display: block; font-size: 11px; color: var(--faint); }
+    .up { color: var(--up); } .down { color: var(--down); } .flat { color: var(--muted); }
+
+    .alert { margin-top: 16px; font-size: 13px; color: var(--muted); border-left: 2px solid var(--gold-dim); padding-left: 12px; }
+    .error { border: 1px solid var(--down); color: var(--down); padding: 16px; border-radius: 4px; }
+
+    footer { margin-top: 64px; padding: 28px 0 40px; border-top: 1px solid var(--line); color: var(--faint); font-size: 12px; line-height: 1.7; }
+    footer p + p { margin-top: 6px; }
+
+    @media (max-width: 760px) {
+      .summary { grid-template-columns: 1fr 1fr; }
+      .stat.hero { grid-column: 1 / -1; padding-right: 0; }
+      .stat.hero + .stat { padding-left: 0; border-left: none; }
+      .stat:not(.hero) { border-top: 1px solid var(--line); }
+      .stat.hero .value { font-size: 42px; }
+      .stat .value { font-size: 28px; }
+      .chart-box { height: 300px; }
+      .card { padding: 16px 12px 8px; }
+      nav a { margin-left: 14px; }
+      .brand { font-size: 12px; letter-spacing: 0.22em; }
+      .title { padding: 40px 0 24px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <a class="brand" href="/">Golden Valley Research</a>
+      <nav>
+        <a class="active" href="/performance/">Performance</a>
+        <a href="/positions/">Positions</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="title">
+      <div class="eyebrow">Roth IRA</div>
+      <h1>Performance</h1>
+      <div class="asof" id="asof">Loading…</div>
+    </section>
+
+    <div class="method">
+      <div class="seg" role="group" aria-label="Return method">
+        <button type="button" data-mode="cum" aria-pressed="true">Time-weighted</button>
+        <button type="button" data-mode="simple" aria-pressed="false">Simple</button>
+      </div>
+      <div class="method-note" id="method-note"></div>
+    </div>
+
+    <section class="summary" id="summary"></section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Cumulative Return</h2>
+        <div class="chips" id="chips" role="group" aria-label="Compare against"></div>
+      </div>
+      <div class="chart-box"><canvas id="chart" aria-label="Cumulative return chart" role="img"></canvas></div>
+      <div class="chart-foot"><span>Hover or tap the chart for daily values</span><span>Since inception</span></div>
+      <div id="alerts"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head"><h2>Daily Returns</h2></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr id="thead"></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <p><strong>Time-weighted:</strong> each day's gain is measured against the prior day's balance and the days are chained together, so the timing of contributions doesn't affect the result. This is how funds and indexes report returns. Benchmarks show the ETF's own return from its opening price on the start date.</p>
+      <p><strong>Simple:</strong> total gain divided by total money put in. Benchmarks show what the same money would have returned in each ETF: the starting capital bought at the open on the start date, and each contribution bought at the close on the day it arrived.</p>
+      <p>In both methods contributions are never counted as gains. Benchmarks include dividends. Benchmark prices: Yahoo Finance. Account data: Fidelity.</p>
+      <p>For informational purposes only. Not investment advice. Past performance does not guarantee future results.</p>
+    </footer>
+  </main>
+
+  <script>
+    const COLORS = ["--s0", "--s1", "--s2"].map((v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim());
+    const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+    const pct = (n, sign = true) => {
+      if (n == null || !isFinite(n)) return "—";
+      const v = n * 100, s = Math.abs(v).toFixed(2) + "%";
+      return sign ? (v > 0.004 ? "+" : v < -0.004 ? "−" : "") + s : s;
+    };
+    const pts = (n) => (n == null ? "—" : (n > 0 ? "+" : n < 0 ? "−" : "") + Math.abs(n * 100).toFixed(2) + " pts");
+    const tone = (n) => (n > 0.00004 ? "up" : n < -0.00004 ? "down" : "flat");
+    const usd = (n) => Math.abs(n).toLocaleString("en-US", { style: "currency", currency: "USD" });
+    const fmtDate = (iso, opts = { month: "short", day: "numeric" }) => new Date(iso + "T12:00:00").toLocaleDateString("en-US", opts);
+    const lastVal = (series, k) => { for (let i = series.length - 1; i >= 0; i--) if (series[i][k] != null) return series[i][k]; return null; };
+    const NOTES = {
+      cum: "Measures how the picks performed, regardless of when money was added.",
+      simple: "Total gain ÷ total money put in. Benchmarks get the same contributions on the same days.",
+    };
+
+    let chart, mode = "cum";
+
+    function render(d) {
+      const roth = d.roth.series;
+      const benches = d.benchmarks.filter((b) => b.available).map((b, i) => ({ ...b, color: COLORS[(d.benchmarks.indexOf(b) + 1) % COLORS.length] }));
+
+      document.getElementById("asof").textContent = d.asOf
+        ? `Since ${fmtDate(d.startDate, { month: "short", day: "numeric", year: "numeric" })} · as of ${fmtDate(d.asOf, { month: "short", day: "numeric", year: "numeric" })} close`
+        : "No data yet";
+
+      // Headline numbers
+      function paintSummary() {
+      const rothCum = d.roth[mode];
+      const summary = document.getElementById("summary");
+      summary.style.setProperty("--bench-count", Math.max(benches.length, 1));
+      summary.innerHTML = `
+        <div class="stat hero">
+          <div class="label"><span class="swatch" style="background:${COLORS[0]}"></span>Roth IRA</div>
+          <div class="value ${tone(rothCum)}">${pct(rothCum)}</div>
+          <div class="sub">${roth.length} trading day${roth.length === 1 ? "" : "s"} since inception</div>
+        </div>` + benches.map((b) => {
+          const v = lastVal(b.series, mode), diff = v == null ? null : rothCum - v;
+          return `<div class="stat">
+            <div class="label"><span class="swatch" style="background:${b.color}"></span>${b.symbol} · ${b.name}</div>
+            <div class="value">${pct(v)}</div>
+            <div class="sub">Roth <span class="${tone(diff)}">${diff == null ? "—" : (diff >= 0 ? "ahead by " : "behind by ") + pts(Math.abs(diff)).replace(/^[+−]/, "")}</span></div>
+          </div>`;
+        }).join("");
+      }
+
+      // Chart data: a "Start" point at 0% so every line begins together
+      const labels = ["Start", ...roth.map((p) => p.date)];
+      const datasets = [{
+        key: "ROTH", label: "Roth IRA", short: "Roth", data: [0, ...roth.map((p) => p[mode] * 100)],
+        borderColor: COLORS[0], borderWidth: 2.5, cubicInterpolationMode: "monotone", order: 0,
+        fill: { target: { value: 0 }, above: "rgba(184,137,47,0.14)", below: "rgba(184,137,47,0.05)" },
+      }, ...benches.map((b) => ({
+        key: b.symbol, label: b.symbol, data: [0, ...b.series.map((p) => (p[mode] == null ? null : p[mode] * 100))],
+        borderColor: b.color, borderWidth: 2, cubicInterpolationMode: "monotone", fill: false, order: 1,
+      }))].map((ds) => ({
+        ...ds, pointRadius: 0, pointHoverRadius: 5, pointHoverBorderWidth: 2,
+        pointHoverBackgroundColor: ds.borderColor, pointHoverBorderColor: css("--panel"), spanGaps: true,
+      }));
+
+      // Toggle chips: Roth is always on
+      const chips = document.getElementById("chips");
+      chips.innerHTML = `<button class="chip locked" aria-pressed="true" disabled title="Always shown"><span class="swatch" style="background:${COLORS[0]}"></span>Roth IRA</button>` +
+        benches.map((b) => `<button class="chip" aria-pressed="true" data-key="${b.symbol}"><span class="swatch" style="background:${b.color}"></span>${b.symbol}</button>`).join("");
+      chips.querySelectorAll(".chip[data-key]").forEach((btn) => btn.addEventListener("click", () => {
+        const on = btn.getAttribute("aria-pressed") !== "true";
+        btn.setAttribute("aria-pressed", on);
+        const i = chart.data.datasets.findIndex((ds) => ds.key === btn.dataset.key);
+        chart.setDatasetVisibility(i, on);
+        chart.update();
+      }));
+
+      // Vertical crosshair at the hovered day
+      const crosshair = {
+        id: "crosshair",
+        afterDatasetsDraw(c) {
+          const act = c.tooltip && c.tooltip.getActiveElements();
+          if (!act || !act.length) return;
+          const x = act[0].element.x, { top, bottom } = c.chartArea, ctx = c.ctx;
+          ctx.save(); ctx.strokeStyle = "rgba(232,228,218,0.25)"; ctx.lineWidth = 1; ctx.setLineDash([3, 3]);
+          ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke(); ctx.restore();
+        },
+      };
+      // Label each visible line at its right end
+      const endLabels = {
+        id: "endLabels",
+        afterDatasetsDraw(c) {
+          const ctx = c.ctx, placed = [];
+          ctx.save(); ctx.font = "500 12px 'DM Sans', sans-serif"; ctx.textBaseline = "middle";
+          c.data.datasets.map((ds, i) => ({ ds, i })).filter(({ i }) => c.isDatasetVisible(i)).map(({ ds, i }) => {
+            const pts = c.getDatasetMeta(i).data; let p = null;
+            for (let k = pts.length - 1; k >= 0; k--) if (ds.data[k] != null) { p = pts[k]; break; }
+            return p && { ds, x: p.x, y: p.y };
+          }).filter(Boolean).sort((a, b) => a.y - b.y).forEach((l) => {
+            let y = l.y; for (const py of placed) if (Math.abs(y - py) < 15) y = py + 15;
+            placed.push(y);
+            ctx.fillStyle = l.ds.borderColor; ctx.fillRect(l.x + 8, y - 4, 8, 8);
+            ctx.fillStyle = css("--text"); ctx.fillText(l.ds.short || l.ds.label, l.x + 20, y);
+          });
+          ctx.restore();
+        },
+      };
+      const zeroLine = {
+        id: "zeroLine",
+        beforeDatasetsDraw(c) {
+          const y = c.scales.y.getPixelForValue(0), { left, right } = c.chartArea, ctx = c.ctx;
+          ctx.save(); ctx.strokeStyle = "rgba(232,228,218,0.28)"; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(left, y); ctx.lineTo(right, y); ctx.stroke(); ctx.restore();
+        },
+      };
+
+      Chart.defaults.font.family = "'DM Sans', sans-serif";
+      Chart.defaults.color = css("--muted");
+      const flowByDate = Object.fromEntries(roth.map((p) => [p.date, p]));
+
+      chart = new Chart(document.getElementById("chart"), {
+        type: "line",
+        data: { labels, datasets },
+        plugins: [zeroLine, crosshair, endLabels],
+        options: {
+          maintainAspectRatio: false,
+          animation: { duration: 900, easing: "easeOutQuart" },
+          interaction: { mode: "index", intersect: false },
+          layout: { padding: { right: 64, top: 8 } },
+          scales: {
+            x: {
+              grid: { display: false }, border: { color: "rgba(232,228,218,0.14)" },
+              ticks: { maxRotation: 0, autoSkipPadding: 24, font: { size: 11 },
+                callback(v) { const l = this.getLabelForValue(v); return l === "Start" ? "Start" : fmtDate(l); } },
+            },
+            y: {
+              grid: { color: "rgba(232,228,218,0.06)" }, border: { display: false },
+              ticks: { font: { size: 11 }, maxTicksLimit: 6, callback: (v) => (v > 0 ? "+" : "") + Number(v).toFixed(1) + "%" },
+              grace: "8%",
+            },
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: "rgba(11,21,38,0.96)", borderColor: "rgba(201,162,75,0.4)", borderWidth: 1,
+              titleColor: css("--text"), bodyColor: css("--text"), footerColor: css("--muted"),
+              titleFont: { weight: "600" }, footerFont: { weight: "400", size: 11 },
+              padding: 12, boxPadding: 6, usePointStyle: true, cornerRadius: 4,
+              itemSort: (a, b) => b.parsed.y - a.parsed.y,
+              callbacks: {
+                title: (items) => { const l = items[0].label; return l === "Start" ? `Start · ${fmtDate(d.startDate)} open` : fmtDate(l, { weekday: "short", month: "short", day: "numeric", year: "numeric" }); },
+                label: (it) => ` ${it.dataset.label}   ${pct(it.parsed.y / 100)}`,
+                labelPointStyle: () => ({ pointStyle: "rectRounded", rotation: 0 }),
+                labelColor: (it) => ({ borderColor: it.dataset.borderColor, backgroundColor: it.dataset.borderColor }),
+                footer: (items) => {
+                  const p = flowByDate[items[0].label];
+                  if (!p) return "";
+                  const lines = [`Roth that day ${pct(p.daily)}`];
+                  if (p.flow) lines.push(`${usd(p.flow)} contribution (not counted as gain)`);
+                  return lines;
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Alerts (e.g., Yahoo unavailable)
+      document.getElementById("alerts").innerHTML = (d.notes || []).map((n) => `<div class="alert">${n.replace(/</g, "&lt;")}</div>`).join("");
+
+      // Daily table, newest first
+      function paintTable() {
+      document.getElementById("thead").innerHTML = `<th>Date</th><th>Roth Day</th><th><span class="swatch" style="background:${COLORS[0]}"></span>Roth Cumulative</th>` +
+        benches.map((b) => `<th><span class="swatch" style="background:${b.color}"></span>${b.symbol} Cumulative</th>`).join("");
+      document.getElementById("tbody").innerHTML = [...roth].reverse().map((p) => {
+        const i = roth.indexOf(p);
+        return `<tr>
+          <td>${fmtDate(p.date, { weekday: "short", month: "short", day: "numeric" })}${p.flow ? `<span class="note">${usd(p.flow)} contribution</span>` : ""}</td>
+          <td class="${tone(p.daily)}">${pct(p.daily)}</td>
+          <td class="${tone(p[mode])}">${pct(p[mode])}</td>
+          ${benches.map((b) => { const v = b.series[i] && b.series[i][mode]; return `<td class="${tone(v)}">${pct(v)}</td>`; }).join("")}
+        </tr>`;
+      }).join("");
+      }
+
+      // Return method switch: updates headline numbers, chart, and table together
+      function setMode(m) {
+        mode = m;
+        document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", b.dataset.mode === m));
+        document.getElementById("method-note").textContent = NOTES[m];
+        paintSummary();
+        paintTable();
+        chart.data.datasets.forEach((ds) => {
+          ds.data = ds.key === "ROTH"
+            ? [0, ...roth.map((p) => p[m] * 100)]
+            : [0, ...benches.find((b) => b.symbol === ds.key).series.map((p) => (p[m] == null ? null : p[m] * 100))];
+        });
+        chart.update();
+      }
+      document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => setMode(b.dataset.mode)));
+      setMode(mode);
+    }
+
+    fetch("/data/performance.json", { cache: "no-store" })
+      .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); })
+      .then(render)
+      .catch((e) => {
+        document.getElementById("asof").textContent = "";
+        document.getElementById("summary").outerHTML = `<div class="error">Performance data couldn't load (${String(e.message).replace(/</g, "&lt;")}).</div>`;
+      });
+  </script>
+</body>
+</html>
