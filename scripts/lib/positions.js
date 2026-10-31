@@ -1,7 +1,7 @@
 // Reads Fidelity "Portfolio Positions" CSV exports.
 
 const path = require("path");
-const { parseCsv, num, readText, MONTHS } = require("./csv");
+const { parseCsv, num, readText, MONTHS, toTradingDay } = require("./csv");
 
 function parseDownloadedAt(text, fileName) {
   // e.g. "Date downloaded Oct-29-2026 8:49 p.m ET"
@@ -24,6 +24,18 @@ function parseDownloadedAt(text, fileName) {
     };
   }
   throw new Error(`Could not find a download date in ${fileName}`);
+}
+
+// Weekend downloads show the prior Friday's close (markets are closed),
+// so label them with Friday's date instead of the download date.
+function withMarketDate(asOf) {
+  const marketDate = toTradingDay(asOf.date);
+  if (marketDate !== asOf.date) {
+    const d = new Date(marketDate + "T12:00:00Z");
+    const label = d.toLocaleDateString("en-US", { timeZone: "UTC", month: "short", day: "numeric", year: "numeric" });
+    return { ...asOf, marketDate, label: `${label} close` };
+  }
+  return { ...asOf, marketDate };
 }
 
 function parseOption(symbol) {
@@ -94,7 +106,7 @@ function parsePositionsFile(filePath) {
   const round = (n) => Math.round(n * 100) / 100;
   return {
     sourceFile: fileName,
-    asOf: parseDownloadedAt(text, fileName),
+    asOf: withMarketDate(parseDownloadedAt(text, fileName)),
     accountName,
     summary: {
       accountValue: round(total),
